@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.track.emgcare.exception.ResourceNotFoundException;
 import com.track.emgcare.model.User;
 import com.track.emgcare.service.UserService;
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/emr/user")
 public class UserController {
 	
 	UserService userService;
@@ -25,7 +28,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/add")
-	public ResponseEntity addUser(@RequestBody User user) {
+	public ResponseEntity<Object> addUser(@RequestBody User user) {
 		userService.addUser(user);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
@@ -36,9 +39,10 @@ public class UserController {
 		return userService.getUsers();
 	}
 	
-	@GetMapping("/user/{name}")
-	public ResponseEntity<Object> getUser(@PathVariable String name) {
-		return ResponseEntity.ok(userService.getUser(name));
+	@PostMapping("/login")
+	public ResponseEntity<User> getUser(@RequestBody User user) throws ResourceNotFoundException{
+		
+		return ResponseEntity.ok(userService.getUser(user));
 	}
 
 }

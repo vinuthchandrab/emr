@@ -1,9 +1,11 @@
 package com.track.emgcare.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.track.emgcare.exception.ResourceNotFoundException;
 import com.track.emgcare.model.User;
 import com.track.emgcare.repository.UserRepository;
 
@@ -26,9 +28,18 @@ public class UserService {
 		 return users;
 	}
 	
-	public Object getUser(String name) {
-		
-		return userRepository.findbyName(name);
+	public User getUser(User user) throws ResourceNotFoundException {
+		if(user.getUserid()==null) {
+			//return new User(user.getUserid(),"","","", "");
+			throw new ResourceNotFoundException("User not found");
+		}
+
+				Optional<User> u = userRepository.findByUserid(user.getUserid());
+		if(u.isEmpty() || (u.isPresent() && !(u.get().getPassword().equals(user.getPassword())))) {
+			//return new User(user.getUserid(),"","","", "");
+			throw new ResourceNotFoundException("User not found");
+		}
+		return u.get();
 	}
 
 }
